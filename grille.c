@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include "coord.h"
 
 /**
  * coord_lin : fonction statique (de module) qui transforme des coordonnées
@@ -79,5 +80,31 @@ float get_hauteur(grille_t grille, coord_t position){
 
 size_t get_voisins(grille_t grille, coord_t position, float seuil, coord_t** voisins){
     assert (grille != NULL);
+    assert (dans_les_bornes(grille, position));
+    coord_t* tableau_voisins = malloc (4*sizeof(coord_t));
+    size_t n = 0;
+    int x = get_x(position);
+    int y = get_y(position);
+    float hauteur= get_hauteur(grille, position);
+    coord_t voisins_prob[4] ={
+        creer_coord(x-1,y),
+        creer_coord(x+1,y),
+        creer_coord(x,y-1),
+        creer_coord(x,y+1),
+
+    };
+    for (int k=0; k<4 ; k=k+1){
+        coord_t coord= voisins_prob[k];
+        if (dans_les_bornes(grille, coord)){
+            float hauteur_voisin = get_hauteur(grille, coord);
+            if ((hauteur_voisin-hauteur)<= seuil && hauteur-hauteur_voisin<=seuil) {
+                tableau_voisins[n] = coord;
+                n=n+1;
+            }
+        } 
+    }
+    *voisins = tableau_voisins;
+    return n;
+
 
 }
